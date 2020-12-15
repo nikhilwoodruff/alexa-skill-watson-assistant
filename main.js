@@ -20,6 +20,18 @@ const alexaVerifier = require('alexa-verifier');
 const AssistantV1 = require('ibm-watson/assistant/v1');
 const { IamAuthenticator } = require('ibm-watson/auth');
 
+try {
+  if (global.gc) {
+    console.log("About to run garbage collection.");
+    global.gc();
+    console.log("Completed running garbage collection.");
+  } else {
+    console.log("Garbage collection not available.");
+  }
+} catch (e) {
+  console.log("Garbage collection cannot be started: " + e);
+}
+
 function errorResponse(reason) {
   return {
     version: '1.0',
@@ -93,6 +105,7 @@ function sendResponse(response, resolve) {
   console.log(response);
 
   // Combine the output messages into one message.
+
   const output = response.result.output.text.join(' ');
   console.log('Output text: ' + output);
 
@@ -102,8 +115,8 @@ function sendResponse(response, resolve) {
     response: {
       shouldEndSession: false,
       outputSpeech: {
-        type: 'PlainText',
-        text: output
+        type: 'SSML',
+        ssml:  output
       }
     },
     sessionAttributes: { watsonContext: context }
